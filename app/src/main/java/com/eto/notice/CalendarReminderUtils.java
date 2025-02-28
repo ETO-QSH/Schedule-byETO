@@ -141,7 +141,7 @@ public class CalendarReminderUtils {
         ContentValues values = new ContentValues();
         values.put(CalendarContract.Reminders.EVENT_ID, ContentUris.parseId(newEvent));
         values.put(CalendarContract.Reminders.MINUTES, notice);
-        values.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_DEFAULT); // METHOD_DEFAULT | METHOD_ALERT
+        values.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT); // METHOD_DEFAULT | METHOD_ALERT
         Uri setValues = context.getContentResolver().insert(Uri.parse(CALENDER_REMINDER_URL), values);
         if (setValues == null) {
             Toast.makeText(context, "设置提示失败", Toast.LENGTH_SHORT).show();
