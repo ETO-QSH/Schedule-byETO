@@ -13,7 +13,6 @@ import android.provider.CalendarContract;
 import android.widget.Toast;
 
 public class CalendarReminderUtils {
-
     private static final String CALENDER_URL = "content://com.android.calendar/calendars";
     private static final String CALENDER_EVENT_URL = "content://com.android.calendar/events";
     private static final String CALENDER_REMINDER_URL = "content://com.android.calendar/reminders";
@@ -146,6 +145,29 @@ public class CalendarReminderUtils {
         Uri setValues = context.getContentResolver().insert(Uri.parse(CALENDER_REMINDER_URL), values);
         if (setValues == null) {
             Toast.makeText(context, "设置提示失败", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * 删除日历事件
+     */
+    public static void deleteCalendarEvents(Context context) {
+        int calId = checkAndAddCalendarAccount(context);
+        if (calId < 0) return;
+
+        Uri eventsUri = Uri.parse(CALENDER_EVENT_URL);
+        String selection = CalendarContract.Events.CALENDAR_ID + "=?";
+        String[] selectionArgs = new String[]{String.valueOf(calId)};
+
+        try {
+            int deletedRows = context.getContentResolver().delete(
+                    eventsUri,
+                    selection,
+                    selectionArgs
+            );
+            Toast.makeText(context, "已删除" + deletedRows + "个事件", Toast.LENGTH_SHORT).show();
+        } catch (SecurityException e) {
+            Toast.makeText(context, "需要日历权限", Toast.LENGTH_SHORT).show();
         }
     }
 }

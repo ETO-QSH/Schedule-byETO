@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 基础按钮样式 -->
+    <style name="DialogButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:minWidth">96dp</item>
+        <item name="android:paddingHorizontal">16dp</item>
+        <item name="fontFamily">@font/lolita</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <!-- 确认按钮 -->
+    <style name="DialogButton.Positive" parent="DialogButton">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
+    <!-- 取消按钮 -->
+    <style name="DialogButton.Negative" parent="DialogButton">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
+    <!-- 对话框主题 -->
+    <style name="CustomDialogTheme" parent="Theme.MaterialComponents.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+</resources>
