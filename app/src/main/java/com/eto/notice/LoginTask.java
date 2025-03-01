@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
@@ -32,6 +33,7 @@ import okhttp3.Response;
 public class LoginTask extends AsyncTask<Void, Void, String> {
     private static final String LOGIN_URL = "https://zhlgd.whut.edu.cn/tpass/login?service=https%3A%2F%2Fjwxt.whut.edu.cn%2Fjwapp%2Fsys%2Fhomeapp%2Findex.do%3FforceCas%3D1";
     private static final String RSA_URL = "https://zhlgd.whut.edu.cn/tpass/rsa?skipWechat=true";
+    private static final String XNX_URL = "https://jwxt.whut.edu.cn/jwapp/sys/homeapp/api/home/currentUser.do";
     private static final String KB_URL = "https://jwxt.whut.edu.cn/jwapp/sys/homeapp/api/home/student/courses.do";
     private final OkHttpClient client;
     private final String username;
@@ -152,12 +154,26 @@ public class LoginTask extends AsyncTask<Void, Void, String> {
                     .build();
 
             Response loginResponse = client.newCall(loginRequest).execute();
-            Log.v("TAG", "loginRequest "+loginResponse.body().string());
 
+            // 使用 Jsoup 解析 HTML
+            Document docx = Jsoup.parse(loginResponse.body().string());
+
+            // 查找 script 标签
+            Elements scripts = docx.select("script");
+
+            String hrefValue = null;
+            for (Element script : scripts) {
+                String scriptContent = script.data(); // 获取 script 标签的内容
+                if (scriptContent.contains("location.href")) {
+                    // 使用正则表达式提取 location.href 的值
+                    hrefValue = scriptContent.replaceAll(".*location\\.href\\s*=\\s*'([^']*)'.*", "$1");
+                }
+            }
+
+            // Step 5: 获取最新课表
             if (isCancelled()) return null;
-            // Step 5: 获取课程数据
             Headers commonHeaders = new Headers.Builder()
-                    .add("referer", "https://jwxt.whut.edu.cn/jwapp/sys/homeapp/home/index.html?av=1740727981213&contextPath=/jwapp")
+                    .add("referer", "https://jwxt.whut.edu.cn" + hrefValue.trim())
                     .add("sec-ch-ua", "\"Not(A:Brand\";v=\"99\", \"Microsoft Edge\";v=\"133\", \"Chromium\";v=\"133\"")
                     .add("sec-ch-ua-mobile", "?0")
                     .add("sec-ch-ua-platform", "\"Windows\"")
@@ -172,8 +188,26 @@ public class LoginTask extends AsyncTask<Void, Void, String> {
                     .add("priority", "u=0, i")
                     .build();
 
+            HttpUrl xnxqHttpUrl = HttpUrl.parse(XNX_URL).newBuilder()
+                    .build();
+
+            Request xnxqRequest = new Request.Builder()
+                    .url(xnxqHttpUrl)
+                    .headers(commonHeaders)
+                    .build();
+
+            Response xnxqResponse = client.newCall(xnxqRequest).execute();
+            String responseJson = xnxqResponse.body().string();
+
+            // 获取 xnxqdm 的值
+            JSONObject jsonResponse = new JSONObject(responseJson);
+            JSONObject datas = jsonResponse.getJSONObject("datas");
+            String xnxqdm = datas.getJSONObject("welcomeInfo").getString("xnxqdm");
+
+            if (isCancelled()) return null;
+            // Step 6: 获取课程数据
             HttpUrl kbHttpUrl = HttpUrl.parse(KB_URL).newBuilder()
-                    .addQueryParameter("termCode", "2024-2025-2")
+                    .addQueryParameter("termCode", xnxqdm)
                     .build();
 
             Request kbRequest = new Request.Builder()
@@ -183,15 +217,15 @@ public class LoginTask extends AsyncTask<Void, Void, String> {
 
             Response kbResponse = client.newCall(kbRequest).execute();
             String responseString = kbResponse.body().string();
-            Log.v("TAG", "responseString "+responseString);
+            Log.v("TAG", "responseString " + responseString);
             if (isCancelled()) return null;
             return responseString;
 
         } catch (Exception e) {
             if (isCancelled()) {
-                Log.d("TAG", "任务被取消");
                 return null;
             }
+            callback.onLoginFailure();
             return null;
         }
     }

@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
             public void onLoginFailure() {
                 timeoutHandler.removeCallbacks(timeoutRunnable);
                 hideLoading();
-                Toast.makeText(MainActivity.this, "登录失败，请检查账号密码或进行反馈", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "登录失败，请检查账号密码或进行反馈（还有可能是学校服务器崩了）", Toast.LENGTH_SHORT).show();
             }
         });
         loginTask.execute();
