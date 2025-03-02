@@ -42,7 +42,7 @@ public class LoginTask extends AsyncTask<Void, Void, String> {
 
     public interface LoginCallback {
         void onLoginSuccess(JSONObject json);
-        void onLoginFailure();
+        void onLoginFailure(String err);
     }
 
     private final LoginCallback callback;
@@ -154,9 +154,15 @@ public class LoginTask extends AsyncTask<Void, Void, String> {
                     .build();
 
             Response loginResponse = client.newCall(loginRequest).execute();
+            String loginResponseHtml = loginResponse.body().string();
+
+            // 检查 loginResponseHtml 是否为空
+            if (loginResponseHtml == null || loginResponseHtml.trim().isEmpty()) {
+                return "null loginResponseHtml";
+            }
 
             // 使用 Jsoup 解析 HTML
-            Document docx = Jsoup.parse(loginResponse.body().string());
+            Document docx = Jsoup.parse(loginResponseHtml);
 
             // 查找 script 标签
             Elements scripts = docx.select("script");
@@ -225,7 +231,6 @@ public class LoginTask extends AsyncTask<Void, Void, String> {
             if (isCancelled()) {
                 return null;
             }
-            callback.onLoginFailure();
             return null;
         }
     }
@@ -240,7 +245,7 @@ public class LoginTask extends AsyncTask<Void, Void, String> {
             }
         } catch (JSONException e) {
             if (callback != null) {
-                callback.onLoginFailure();
+                callback.onLoginFailure(result);
             }
         }
     }

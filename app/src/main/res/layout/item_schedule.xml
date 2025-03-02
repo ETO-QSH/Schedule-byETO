@@ -1,0 +1,72 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="270dp"
+    android:layout_height="60dp"
+    android:layout_margin="12dp"
+    android:padding="4dp"
+    android:radius="32dp"
+    android:elevation="4dp"
+    android:clipToPadding="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:layout_width="9dp"
+            android:layout_height="match_parent"
+            android:radius="32dp"
+            android:background="@color/pink"
+            android:layerType="software"
+            android:backgroundTintMode="src_in"
+            android:clipToOutline="true"
+            android:outlineProvider="bounds" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="10"
+            android:orientation="vertical"
+            android:paddingStart="8dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="知识产权风险管理(GX)"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="余区北-教学大楼-324"
+                android:textSize="12sp"
+                android:textColor="@android:color/darker_gray" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:paddingEnd="8dp">
+
+            <TextView
+                android:id="@+id/tv_start_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="14:00"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:id="@+id/tv_end_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="16:25"
+                android:textSize="15sp"
+                android:textColor="@android:color/darker_gray"/>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

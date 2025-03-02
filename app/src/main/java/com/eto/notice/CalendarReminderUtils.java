@@ -95,15 +95,15 @@ public class CalendarReminderUtils {
         if (context == null) {
             return;
         }
-        int calId = checkAndAddCalendarAccount(context); //获取日历账户的id
+        int calId = checkAndAddCalendarAccount(context); // 获取日历账户的id
         if (calId < 0) {
             return;
         }
 
         Calendar mCalendar = Calendar.getInstance();
-        mCalendar.setTimeInMillis(startTime); //设置开始时间
+        mCalendar.setTimeInMillis(startTime); // 设置开始时间
         long start = mCalendar.getTime().getTime();
-        mCalendar.setTimeInMillis(endMillis); //设置终止时间
+        mCalendar.setTimeInMillis(endMillis); // 设置终止时间
         long end = mCalendar.getTime().getTime();
 
         ContentValues event = new ContentValues();
@@ -116,13 +116,18 @@ public class CalendarReminderUtils {
         event.put(CalendarContract.Events.HAS_ALARM, true);
         event.put(CalendarContract.Events.EVENT_TIMEZONE, "Asia/Shanghai");
         event.put(CalendarContract.Events.EVENT_LOCATION, locate);
-        event.put(CalendarContract.Events.EVENT_COLOR, Color.RED); //设置颜色 未生效byETO
-        Uri newEvent = context.getContentResolver().insert(Uri.parse(CALENDER_EVENT_URL), event); //添加事件
+        event.put(CalendarContract.Events.EVENT_COLOR, Color.RED); // 设置颜色 未生效byETO
+
+        // 保证事件长时间有效
+        event.put(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
+        event.put(CalendarContract.Events.ACCESS_LEVEL, CalendarContract.Events.ACCESS_PRIVATE);
+
+        Uri newEvent = context.getContentResolver().insert(Uri.parse(CALENDER_EVENT_URL), event); // 添加事件
         if (newEvent == null) {
             return;
         }
 
-        //扩展属性
+        // 扩展属性
         Uri extendedPropUri = CalendarContract.ExtendedProperties.CONTENT_URI;
         extendedPropUri = extendedPropUri.buildUpon()
                 .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER,"true")
@@ -133,11 +138,11 @@ public class CalendarReminderUtils {
         extendedProperties.put(CalendarContract.ExtendedProperties.VALUE,"{\"need_alarm\":true}");
         extendedProperties.put(CalendarContract.ExtendedProperties.NAME,"agenda_info");
         Uri uriExtended = context.getContentResolver().insert(extendedPropUri, extendedProperties);
-        if (uriExtended == null) { //添加事件提醒失败直接返回
+        if (uriExtended == null) { // 添加事件提醒失败直接返回
             return;
         }
 
-        //事件提醒的设定
+        // 事件提醒的设定
         ContentValues values = new ContentValues();
         values.put(CalendarContract.Reminders.EVENT_ID, ContentUris.parseId(newEvent));
         values.put(CalendarContract.Reminders.MINUTES, notice);

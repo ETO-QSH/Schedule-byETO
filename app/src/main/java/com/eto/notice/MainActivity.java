@@ -43,6 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity {
@@ -255,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
             if (loginTask != null && !loginTask.isCancelled()) {
                 loginTask.cancel(true);
                 hideLoading();
-                Toast.makeText(MainActivity.this, "登录超时，大概率学校服务器崩了", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "登录超时，请检查网络连接", Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -268,10 +269,14 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onLoginFailure() {
+            public void onLoginFailure(String err) {
                 timeoutHandler.removeCallbacks(timeoutRunnable);
                 hideLoading();
-                Toast.makeText(MainActivity.this, "登录失败，请检查账号密码或进行反馈（还有可能是学校服务器崩了）", Toast.LENGTH_SHORT).show();
+                if (Objects.equals(err, "null loginResponseHtml")) {
+                    Toast.makeText(MainActivity.this, "登录失败，学校服务器崩了", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "登录失败，账号密码错误", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         loginTask.execute();
