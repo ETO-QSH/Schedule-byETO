@@ -104,7 +104,7 @@ public class ScheduleConverter {
         }
 
         // 4. 提取地点
-        Matcher locationMatcher = Pattern.compile("余区\\S-[\\S-]+(?=,|$)").matcher(block);
+        Matcher locationMatcher = Pattern.compile("[\\u4e00-\\u9fa5]+-[\\S-]+(?=,|$)").matcher(block);
         if (locationMatcher.find()) {
             result.add(locationMatcher.group().replace(",", ""));
         }

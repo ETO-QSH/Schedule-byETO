@@ -156,13 +156,15 @@ public class CalendarReminderUtils {
     /**
      * 删除日历事件
      */
-    public static void deleteCalendarEvents(Context context) {
+    public static void deleteCalendarEvents(Context context, String targetDescription) {
         int calId = checkAndAddCalendarAccount(context);
         if (calId < 0) return;
 
         Uri eventsUri = Uri.parse(CALENDER_EVENT_URL);
-        String selection = CalendarContract.Events.CALENDAR_ID + "=?";
-        String[] selectionArgs = new String[]{String.valueOf(calId)};
+        // 修改 selection 来匹配日历 ID 和备注内容
+        String selection = CalendarContract.Events.CALENDAR_ID + "=? AND " +
+                CalendarContract.Events.DESCRIPTION + "=?";
+        String[] selectionArgs = new String[]{String.valueOf(calId), targetDescription};
 
         try {
             int deletedRows = context.getContentResolver().delete(

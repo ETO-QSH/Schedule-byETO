@@ -342,7 +342,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void clearCalendarEvents() {
-        CalendarReminderUtils.deleteCalendarEvents(this);
+        CalendarReminderUtils.deleteCalendarEvents(this, "꒰ঌ( ⌯' '⌯)໒꒱");
         Toast.makeText(this, "日历事件已清除", Toast.LENGTH_SHORT).show();
     }
 
